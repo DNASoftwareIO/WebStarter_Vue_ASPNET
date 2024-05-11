@@ -1,0 +1,4 @@
+- Password fields can be extracted to a Vue component so that we don't have so much duplicate logic.
+- The 2fa checks in login and security vue files can be improved and refactored.
+- Confirm email page
+- Terms and conditions page 
