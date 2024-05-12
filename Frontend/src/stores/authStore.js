@@ -95,7 +95,7 @@ export const useAuthStore = defineStore('authStore', () => {
     localStorage.setItem('user', JSON.stringify(
       {
         id: id.value,
-        userNme: userName.value,
+        userName: userName.value,
         dateJoined: dateJoined.value,
         email: email.value,
         emailConfirmed: emailConfirmed.value,
