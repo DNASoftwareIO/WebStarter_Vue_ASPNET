@@ -12,8 +12,8 @@
         <img v-else @click="toggleShowPassword" src="/images/svg/show.svg" alt="">
       </div>
 
-      <label v-if="mfaRequired">{{ $t("2FACode") }} <span class="error">{{form.errors.mfaCode}}</span></label>
-      <input v-if="mfaRequired" type="text" v-model="mfaCode" autocomplete="off">
+      <label v-if="tfaRequired">{{ $t("TfaCode") }} <span class="error">{{form.errors.tfaCode}}</span></label>
+      <input v-if="tfaRequired" type="text" v-model="tfaCode" autocomplete="off">
         
       <label class="terms-label">{{ $t('loginForm.terms') }} <router-link @click="modalStore.closeModal()" to="/terms">{{ $t('TermsofService') }}</router-link></label>
       
@@ -41,14 +41,14 @@ const modalStore = useModalStore();
 const formSchema = z.object({
   username: z.string().min(3),
   password: z.string().min(8),
-  // mfaCode: z.string().min(6),
+  // tfaCode: z.string().min(6),
 });
 
 var form = reactive(new zForm(formSchema));
 const showPassword = ref(false);
 const passwordInputType = ref('password');
-const mfaRequired = ref(false);
-const mfaCode = ref('');
+const tfaRequired = ref(false);
+const tfaCode = ref('');
 
 function toggleShowPassword() {
   showPassword.value = !showPassword.value;
@@ -62,14 +62,14 @@ async function login() {
     return;  
 
   try {
-    const response = await api.auth.login(form.fields.username, form.fields.password, mfaCode.value);
+    const response = await api.auth.login(form.fields.username, form.fields.password, tfaCode.value);
     authStore.login(response.data);
     modalStore.closeModal();
   } catch (error) {
     if(error.response) {
       if(error.response.data == 'tfa required') {
-        mfaRequired.value = true;
-        form.errorSummary = '2fa code required';
+        tfaRequired.value = true;
+        form.errorSummary = 'Tfa code required';
       }
       else {
         form.errorSummary = error.response.data;

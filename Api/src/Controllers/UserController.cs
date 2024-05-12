@@ -139,7 +139,7 @@ public class UserController : ControllerBase
     if (user.TwoFactorEnabled)
     {
       // TODO If the user has tfa required we just ask them to send login request again with TfaCode.
-      // Some sites will redirect to a login with 2fa page and store session between requests.
+      // Some sites will redirect to a login with tfa page and store session between requests.
       // I think the way here is the simplest way to do this especially with spa frontends.
       // If there's a good security reason to do things differently then we can change this.
       if (string.IsNullOrEmpty(cmd.TfaCode))
@@ -148,11 +148,11 @@ public class UserController : ControllerBase
         return StatusCode(StatusCodes.Status400BadRequest, "tfa required");
       }
 
-      // TODO check if 2fa code has already been used!
+      // TODO check if tfa code has already been used!
       var tfaResult = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, cmd.TfaCode);
       if (!tfaResult)
       {
-        return StatusCode(StatusCodes.Status400BadRequest, "Invalid 2fa code");
+        return StatusCode(StatusCodes.Status400BadRequest, "Invalid tfa code");
       }
     }
 
@@ -270,7 +270,7 @@ public class UserController : ControllerBase
         return StatusCode(StatusCodes.Status400BadRequest, "tfa required");
       }
 
-      // TODO check 2fa code has not been used
+      // TODO check tfa code has not been used
       var tfaResult = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, cmd.TfaCode);
       if (!tfaResult)
       {
@@ -323,7 +323,7 @@ public class UserController : ControllerBase
   [HttpGet]
   [Authorize]
   [Route("[controller]/get-tfa-key")]
-  public async Task<IActionResult> GetTFAKey()
+  public async Task<IActionResult> GetTfaKey()
   {
     var userId = User.GetId();
     var user = await _userManager.FindByIdAsync(userId.ToString());
@@ -332,10 +332,10 @@ public class UserController : ControllerBase
       return StatusCode(StatusCodes.Status400BadRequest, "User not found.");
     }
 
-    // don't return key to someone who has 2fa enabled as an attacker could use to disable
+    // don't return key to someone who has tfa enabled as an attacker could use to disable
     if (user.TwoFactorEnabled)
     {
-      return StatusCode(StatusCodes.Status400BadRequest, "Cant get key if 2fa enabled.");
+      return StatusCode(StatusCodes.Status400BadRequest, "Cant get key if tfa enabled.");
     }
 
     var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
@@ -360,7 +360,7 @@ public class UserController : ControllerBase
   [HttpPost]
   [Authorize]
   [Route("[controller]/toggle-tfa")]
-  public async Task<IActionResult> ToggleTFA([FromBody] ToggleTfaCommand cmd)
+  public async Task<IActionResult> ToggleTfa([FromBody] ToggleTfaCommand cmd)
   {
     var userId = User.GetId();
     var user = await _userManager.FindByIdAsync(userId.ToString());
@@ -491,14 +491,14 @@ public class UserController : ControllerBase
     {
       if (string.IsNullOrEmpty(cmd.TfaCode))
       {
-        return new JsonResult(new { success = false, errorMessage = "mfa required" });
+        return new JsonResult(new { success = false, errorMessage = "tfa required" });
       }
 
-      // TODO check 2fa code has not been used
-      var mfaResult = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, cmd.TfaCode);
-      if (!mfaResult)
+      // TODO check tfa code has not been used
+      var tfaResult = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, cmd.TfaCode);
+      if (!tfaResult)
       {
-        return StatusCode(StatusCodes.Status400BadRequest, "Invalid 2fa code");
+        return StatusCode(StatusCodes.Status400BadRequest, "Invalid tfa code");
       }
     }
 

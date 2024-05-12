@@ -35,8 +35,8 @@
         <img v-else @click="toggleShowConfirmPassword" src="/images/svg/show.svg" alt="">
       </div>
 
-      <label v-if="authStore.tfaEnabled">{{ $t("2FACode") }} <span class="error">{{passwordForm.errors.mfaCode}}</span></label>
-      <input v-if="authStore.tfaEnabled" type="text" v-model="passwordFormMfaCode" autocomplete="off">
+      <label v-if="authStore.tfaEnabled">{{ $t("TfaCode") }} <span class="error">{{passwordForm.errors.tfaCode}}</span></label>
+      <input v-if="authStore.tfaEnabled" type="text" v-model="passwordFormTfaCode" autocomplete="off">
 
       <div class="justify-end">
         <button type="submit" class="primary">{{ $t('Save') }}</button>
@@ -47,14 +47,8 @@
 
   <div class="card">
     <h3>{{ $t('TwoFactorAuth') }}</h3>
-    <div v-if="toggle2faSuccess" class="success-alert">
-      <div>
-          <img src="/images/svg/alert-green-check.svg" alt="icon">
-      </div>
-      <div>
-          <h3>{{ $t('2faChanged') }}</h3>
-          <p>{{ $t('2faChangedSuccess') }}</p>
-      </div>
+    <div v-if="toggleTfaSuccess" class="success-alert" style="padding: 0;">
+      <p>{{ $t('TfaChangedSuccess') }}</p>
     </div>
     <p v-if="tfaForm.errorSummary != ''" class="error-summary">{{tfaForm.errorSummary}}</p>
     <form @submit.prevent="toggleTfa" method="post" autocomplete="off">
@@ -68,14 +62,14 @@
         <input v-model="tfaKey" type="text" disabled />
       </div>
       <div>
-        <label>{{ $t('2faCode') }} <span class="error">{{tfaForm.errors.tfaToken}}</span></label>
+        <label>{{ $t('TfaCode') }} <span class="error">{{tfaForm.errors.tfaToken}}</span></label>
         <input v-model="tfaForm.fields.tfaToken" type="text" placeholder="">
       </div>
     </div>
 
   </div>
   <div class="justify-end mt-33">
-    <button type="submit" class="primary">{{authStore.tfaEnabled ? i18n.global.t('Disable2fa') : i18n.global.t('Enable2fa') }}</button>
+    <button type="submit" class="primary">{{authStore.tfaEnabled ? i18n.global.t('DisableTfa') : i18n.global.t('EnableTfa') }}</button>
   </div>
   </form>
   </div>
@@ -116,8 +110,8 @@ const confirmPasswordInputType = ref('password');
 const changePasswordSuccess = ref(false);
 const tfaKey = ref('');
 const tfaUri = ref('');
-const passwordFormMfaCode = ref(''); // TODO can we handle this with zod where it's only required if authStore.tfaEnabled is true?
-const toggle2faSuccess = ref(false);
+const passwordFormTfaCode = ref(''); // TODO can we handle this with zod where it's only required if authStore.tfaEnabled is true?
+const toggleTfaSuccess = ref(false);
 
 
 function toggleShowOldPassword() {
@@ -145,7 +139,7 @@ onMounted(async () => {
     }
     catch (error) {
     if(error.response) {
-      if(error.response.data == 'Cant get key if 2fa enabled.') {
+      if(error.response.data == 'Cant get key if Tfa enabled.') {
         tfaKey.value = '';
         tfaUri.value = '';
         tfaForm.fields.tfaToken = '';
@@ -171,7 +165,7 @@ const toggleTfa = async () => {
     tfaUri.value = '';
     tfaForm.fields.tfaToken = '';
     authStore.toggleTfa();
-    toggle2faSuccess.value = true;
+    toggleTfaSuccess.value = true;
     
     // TODO return this with the first request
     if (!authStore.tfaEnabled) {
@@ -201,10 +195,10 @@ const changePassword = async () => {
   }
   
   try {
-    await api.auth.changePassword(passwordForm.fields.oldPassword, passwordForm.fields.newPassword, passwordFormMfaCode.value);
+    await api.auth.changePassword(passwordForm.fields.oldPassword, passwordForm.fields.newPassword, passwordFormTfaCode.value);
     changePasswordSuccess.value = true;
     passwordForm.reset();
-    passwordFormMfaCode.value = '';
+    passwordFormTfaCode.value = '';
   } catch (error) {
     if(error.response) {
       passwordForm.errorSummary = error.response.data;

@@ -110,7 +110,7 @@ describe('User Api', () => {
     });
 
     // TODO add test for when user is deleted
-    // TODO add tests for 2fa enabled etc
+    // TODO add tests for tfa enabled etc
 
     it('Should return 400 if username empty', async () => {
       const res = await request(baseUrl).post('/user/login')
