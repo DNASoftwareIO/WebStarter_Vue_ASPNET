@@ -8,16 +8,14 @@
         <form @submit.prevent="resetPassword" method="post" autocomplete="off" class="flex-col">
           <label>{{ $t('NewPassword') }} <span class="error">{{form.errors.newPassword}}</span></label>
           <div class="password-field">
-            <input v-model="form.fields.newPassword" :type="newPasswordInputType" :placeholder="$t('NewPassword')">
-            <img v-if="showNewPassword" @click="toggleShowNewPassword" src="/images/svg/hide.svg" alt="">
-            <img v-else @click="toggleShowNewPassword" src="/images/svg/show.svg" alt="">
+            <input v-model="form.fields.newPassword" :type="showNewPassword ? 'text' : 'password'" :placeholder="$t('NewPassword')">
+            <img @click="showNewPassword = !showNewPassword" :src="'/images/svg/' + (showNewPassword ? 'hide' : 'show') + '.svg'">
           </div>
 
           <label>{{ $t('ConfirmPassword') }} <span class="error">{{form.errors.confirmPassword}}</span></label>
           <div class="password-field">
-            <input v-model="form.fields.confirmPassword" :type="confirmPasswordInputType" :placeholder="$t('ConfirmPassword')">
-            <img v-if="showConfirmPassword" @click="toggleShowConfirmPassword" src="/images/svg/hide.svg" alt="">
-            <img v-else @click="toggleShowConfirmPassword" src="/images/svg/show.svg" alt="">
+            <input v-model="form.fields.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" :placeholder="$t('ConfirmPassword')">
+            <img @click="showConfirmPassword = !showConfirmPassword" :src="'/images/svg/' + (showConfirmPassword ? 'hide' : 'show') + '.svg'">
           </div>
 
           <button class="primary" type="submit">{{ $t('ResetPassword') }}</button>
@@ -61,19 +59,7 @@ const formSchema = z.object({
 
 var form = reactive(new zForm(formSchema));
 const showNewPassword = ref(false);
-const newPasswordInputType = ref('password');
 const showConfirmPassword = ref(false);
-const confirmPasswordInputType = ref('password');
-
-function toggleShowNewPassword() {
-  showNewPassword.value = !showNewPassword.value;
-  newPasswordInputType.value = newPasswordInputType.value === 'password' ? 'text' : 'password';
-}
-
-function toggleShowConfirmPassword() {
-  showConfirmPassword.value = !showConfirmPassword.value;
-  confirmPasswordInputType.value = confirmPasswordInputType.value === 'password' ? 'text' : 'password';
-}
 
 async function resetPassword() {
   form.validate();

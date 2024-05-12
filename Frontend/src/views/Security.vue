@@ -16,23 +16,20 @@
     <form @submit.prevent="changePassword" method="post" autocomplete="off">
       <label>{{ $t('OldPassword') }} <span class="error">{{passwordForm.errors.oldPassword}}</span></label>
       <div class="password-field">
-        <input v-model="passwordForm.fields.oldPassword" :type="oldPasswordInputType" :placeholder="$t('OldPassword')">
-        <img v-if="showOldPassword" @click="toggleShowOldPassword" src="/images/svg/hide.svg" alt="">
-        <img v-else @click="toggleShowOldPassword" src="/images/svg/show.svg" alt="">
+        <input v-model="passwordForm.fields.oldPassword" :type="showOldPassword ? 'text' : 'password'" :placeholder="$t('OldPassword')">
+        <img @click="showOldPassword = !showOldPassword" :src="'/images/svg/' + (showOldPassword ? 'hide' : 'show') + '.svg'">
       </div>
 
       <label>{{ $t('NewPassword') }} <span class="error">{{passwordForm.errors.newPassword}}</span></label>
       <div class="password-field">
-        <input v-model="passwordForm.fields.newPassword" :type="newPasswordInputType" :placeholder="$t('NewPassword')">
-        <img v-if="showNewPassword" @click="toggleShowNewPassword" src="/images/svg/hide.svg" alt="">
-        <img v-else @click="toggleShowNewPassword" src="/images/svg/show.svg" alt="">
+        <input v-model="passwordForm.fields.newPassword" :type="showNewPassword ? 'text' : 'password'" :placeholder="$t('NewPassword')">
+        <img @click="showNewPassword = !showNewPassword" :src="'/images/svg/' + (showNewPassword ? 'hide' : 'show') + '.svg'">
       </div>
 
       <label>{{ $t('ConfirmPassword') }} <span class="error">{{passwordForm.errors.confirmPassword}}</span></label>
       <div class="password-field">
-        <input v-model="passwordForm.fields.confirmPassword" :type="confirmPasswordInputType" :placeholder="$t('ConfirmPassword')">
-        <img v-if="showConfirmPassword" @click="toggleShowConfirmPassword" src="/images/svg/hide.svg" alt="">
-        <img v-else @click="toggleShowConfirmPassword" src="/images/svg/show.svg" alt="">
+        <input v-model="passwordForm.fields.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" :placeholder="$t('ConfirmPassword')">
+        <img @click="showConfirmPassword = !showConfirmPassword" :src="'/images/svg/' + (showConfirmPassword ? 'hide' : 'show') + '.svg'">
       </div>
 
       <label v-if="authStore.tfaEnabled">{{ $t("TfaCode") }} <span class="error">{{passwordForm.errors.tfaCode}}</span></label>
@@ -102,32 +99,13 @@ const tfaFormSchema = z.object({
 var tfaForm = reactive(new zForm(tfaFormSchema));
 var passwordForm = reactive(new zForm(passwordFormSchema));
 const showOldPassword = ref(false);
-const oldPasswordInputType = ref('password');
 const showNewPassword = ref(false);
-const newPasswordInputType = ref('password');
 const showConfirmPassword = ref(false);
-const confirmPasswordInputType = ref('password');
 const changePasswordSuccess = ref(false);
 const tfaKey = ref('');
 const tfaUri = ref('');
 const passwordFormTfaCode = ref(''); // TODO can we handle this with zod where it's only required if authStore.tfaEnabled is true?
 const toggleTfaSuccess = ref(false);
-
-
-function toggleShowOldPassword() {
-  showOldPassword.value = !showOldPassword.value;
-  oldPasswordInputType.value = oldPasswordInputType.value === 'password' ? 'text' : 'password';
-}
-
-function toggleShowNewPassword() {
-  showNewPassword.value = !showNewPassword.value;
-  newPasswordInputType.value = newPasswordInputType.value === 'password' ? 'text' : 'password';
-}
-
-function toggleShowConfirmPassword() {
-  showConfirmPassword.value = !showConfirmPassword.value;
-  confirmPasswordInputType.value = confirmPasswordInputType.value === 'password' ? 'text' : 'password';
-}
 
 onMounted(async () => {
   if (!authStore.tfaEnabled) {

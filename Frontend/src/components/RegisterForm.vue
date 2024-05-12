@@ -10,9 +10,8 @@
       
       <label>{{ $t('Password') }} <span class="error">{{form.errors.password}}</span></label>
       <div class="password-field">
-        <input v-model="form.fields.password" :type="passwordInputType" :placeholder="$t('Password')">
-        <img v-if="showPassword" @click="toggleShowPassword" src="/images/svg/hide.svg" alt="">
-        <img v-else @click="toggleShowPassword" src="/images/svg/show.svg" alt="">
+        <input v-model="form.fields.password" :type="showPassword ? 'text' : 'password'" :placeholder="$t('Password')">
+        <img @click="showPassword = !showPassword" :src="'/images/svg/' + (showPassword ? 'hide' : 'show') + '.svg'">
       </div>
       
       <label>{{ $t('PromoCode') }} <span class="error">{{form.errors.promoCode}}</span></label>
@@ -54,13 +53,6 @@ const formSchema = z.object({
 
 var form = reactive(new zForm(formSchema));
 const showPassword = ref(false);
-const passwordInputType = ref('password');
-
-function toggleShowPassword() {
-  showPassword.value = !showPassword.value;
-  passwordInputType.value = passwordInputType.value === 'password' ? 'text' : 'password';
-}
-
 
 async function register() {
   form.validate();
