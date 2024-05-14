@@ -55,6 +55,9 @@
   "TfaChangedSuccess": "TFA settings changed",
   "Logout": "Logout",
   "Logout2": "Log out",
+  "EmailAddressConfirmed": "Email Address Confirmed",
+  "ErrorConfirmingEmailAddress": "Error Confirming Email Address",
+  "EmailErrorDetail": "Please contact support for assistance.",
   "loginForm": {
       "terms": "By accessing the site I confirm that I agree to the"
   },

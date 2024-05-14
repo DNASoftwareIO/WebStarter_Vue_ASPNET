@@ -453,15 +453,15 @@ public class UserController : ControllerBase
     var user = await _userManager.FindByIdAsync(cmd.UserId);
     if (user == null)
     {
-      return BadRequest();
+      return StatusCode(StatusCodes.Status400BadRequest, "User not found.");
     }
 
-    cmd.Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(cmd.Code));
+    cmd.Token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(cmd.Token));
 
-    var result = await _userManager.ConfirmEmailAsync(user, cmd.Code);
+    var result = await _userManager.ConfirmEmailAsync(user, cmd.Token);
     if (!result.Succeeded)
     {
-      return BadRequest();
+      return StatusCode(StatusCodes.Status400BadRequest, "Token invalid.");
     }
 
     await _context.SaveChangesAsync();

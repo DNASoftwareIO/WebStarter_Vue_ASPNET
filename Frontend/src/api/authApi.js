@@ -62,6 +62,13 @@ const resetPassword = async (email, token, password) => {
   });
 }
 
+const confirmEmail = async (userId, token) => {
+  return await instance.post('/user/confirm-email', {
+    userId,
+    token, 
+  });
+}
+
 export default {
   login,
   register,
@@ -72,5 +79,6 @@ export default {
   toggleTfa,
   changePassword,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  confirmEmail
 }

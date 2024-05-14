@@ -150,6 +150,10 @@
     color: var(--error)!important;
   }
   
+  .success {
+    color:  var(--green);
+  }
+  
   .flex-col {
     display: flex;
     flex-direction: column;

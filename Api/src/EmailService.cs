@@ -70,7 +70,7 @@ public class EmailService
     var subject = "Email verification";
     StringBuilder message = new();
     message.AppendFormat("Hi {0},\n Click the link below to verify your email.\n", user.UserName);
-    message.AppendFormat("<a href=\"{0}\">Verify Email Address</a>", _configuration["WebClientUrl"] + "/user/confirm-email?userId=" + user.Id.ToString() + "&token=" + token);
+    message.AppendFormat("<a href=\"{0}\">Verify Email Address</a>", _configuration["WebClientUrl"] + "/confirm-email?userId=" + user.Id.ToString() + "&token=" + token);
 
     await SendEmail(user.Email, subject, message.ToString());
   }

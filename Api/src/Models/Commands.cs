@@ -76,7 +76,7 @@ public struct ConfirmEmailCommand
   public string UserId { get; set; }
 
   [Required]
-  public string Code { get; set; }
+  public string Token { get; set; }
 }
 
 public struct SetEmailCommand

@@ -4,6 +4,7 @@ import { useModalStore } from "../stores/modalStore";
 
 import Home from "../views/Home.vue";
 import ResetPassword from "../views/ResetPassword.vue";
+import ConfirmEmail from "../views/ConfirmEmail.vue";
 import Sessions from "../views/Sessions.vue";
 import Security from "../views/Security.vue";
 
@@ -19,6 +20,11 @@ const router = createRouter({
       path: "/reset-password",
       name: "reset-password",
       component: ResetPassword,
+    },
+    {
+      path: "/confirm-email",
+      name: "confirm-email",
+      component: ConfirmEmail,
     },
     {
       path: "/sessions",
