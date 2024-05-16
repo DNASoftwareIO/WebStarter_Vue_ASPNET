@@ -12,8 +12,10 @@
 			"nvmVersion": "latest"
 		}
 	},
-
-	// Configure tool-specific properties.
+	"mounts": [
+        "source=${localWorkspaceFolderBasename}-Frontend-node_modules,target=${containerWorkspaceFolder}/Frontend/node_modules,type=volume"
+    ],
+    // Configure tool-specific properties.
 	// "customizations": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -24,7 +26,7 @@
 	//		}
 	// }
 
-    "postCreateCommand": "(dotnet tool install --global dotnet-ef); (cd ./Frontend && npm install); (cd ./Api && dotnet restore)",
+    "postCreateCommand": "(sudo chown vscode Frontend/node_modules); (dotnet tool install --global dotnet-ef); (cd ./Frontend && npm install); (cd ./Api && dotnet restore)",
 
     "remoteUser": "vscode",
     "customizations": {
