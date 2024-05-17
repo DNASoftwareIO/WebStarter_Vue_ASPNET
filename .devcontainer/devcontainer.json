@@ -13,7 +13,9 @@
 		}
 	},
 	"mounts": [
-        "source=${localWorkspaceFolderBasename}-Frontend-node_modules,target=${containerWorkspaceFolder}/Frontend/node_modules,type=volume"
+        "source=${localWorkspaceFolderBasename}-Frontend-node_modules,target=${containerWorkspaceFolder}/Frontend/node_modules,type=volume",
+        "source=${localWorkspaceFolderBasename}-Api-bin,target=${containerWorkspaceFolder}/Api/bin,type=volume",
+        "source=${localWorkspaceFolderBasename}-Api-obj,target=${containerWorkspaceFolder}/Api/obj,type=volume"
     ],
     // Configure tool-specific properties.
 	// "customizations": {},
@@ -26,7 +28,7 @@
 	//		}
 	// }
 
-    "postCreateCommand": "(sudo chown vscode Frontend/node_modules); (dotnet tool install --global dotnet-ef); (cd ./Frontend && npm install); (cd ./Api && dotnet restore)",
+    "postCreateCommand": "(sudo chown vscode Frontend/node_modules); (sudo chown vscode Api/obj); (sudo chown vscode Api/bin); (dotnet tool install --global dotnet-ef); (cd ./Frontend && npm install); (cd ./Api && dotnet restore)",
 
     "remoteUser": "vscode",
     "customizations": {
