@@ -65,6 +65,7 @@ export const useAuthStore = defineStore('authStore', () => {
         
         sessionId.value = localStorage.getItem('sessionId');
         var user = JSON.parse(localStorage.getItem('user'));
+        id.value = user.id;
         userName.value = user.userName;
         dateJoined.value = user.dateJoined;
         email.value = user.email;
@@ -75,6 +76,7 @@ export const useAuthStore = defineStore('authStore', () => {
   }
 
   function logout() {
+    id.value = '';
     userName.value = '';
     dateJoined.value = '';
     email.value = '';
@@ -104,5 +106,5 @@ export const useAuthStore = defineStore('authStore', () => {
     ));
   }
 
-  return { userName, email, tfaEnabled, loggedIn, sessionId, login, loginFromStorage, logout, toggleTfa };
+  return { id, userName, email, tfaEnabled, loggedIn, sessionId, login, loginFromStorage, logout, toggleTfa };
 })
