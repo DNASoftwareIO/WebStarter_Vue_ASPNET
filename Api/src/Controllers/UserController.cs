@@ -44,12 +44,13 @@ public class UserController : ControllerBase
     return session;
   }
 
-  private string CreateJwt(User user)
+  private string CreateJwt(User user, Guid sessionId)
   {
     var authClaims = new List<Claim>
     {
       new (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-      new (JwtRegisteredClaimNames.Name, user.UserName ?? "")
+      new (JwtRegisteredClaimNames.Name, user.UserName ?? ""),
+      new ("sessionId", sessionId.ToString())
     };
 
     var authKey = _configuration["JWTSettings:Key"];
@@ -93,7 +94,7 @@ public class UserController : ControllerBase
 
     await _emailService.SendEmailConfirmationToken(user);
 
-    var jwt = CreateJwt(user);
+    var jwt = CreateJwt(user, session.Id);
 
     return new JsonResult(new { jwt, refreshToken = session.RefreshToken, sessionId = session.Id, user = new UserDto(user) });
   }
@@ -155,7 +156,7 @@ public class UserController : ControllerBase
 
     await _context.SaveChangesAsync();
 
-    var jwt = CreateJwt(user);
+    var jwt = CreateJwt(user, session.Id);
 
     return new JsonResult(new { jwt, refreshToken = session.RefreshToken, sessionId = session.Id, user = new UserDto(user) });
   }
@@ -181,7 +182,7 @@ public class UserController : ControllerBase
       return StatusCode(StatusCodes.Status400BadRequest, "Session not found or expired.");
     }
 
-    var jwt = CreateJwt(user);
+    var jwt = CreateJwt(user, session.Id);
     return new JsonResult(new { jwt });
   }
 
@@ -278,6 +279,15 @@ public class UserController : ControllerBase
     {
       return StatusCode(StatusCodes.Status400BadRequest, "Error changing password.");
     }
+
+    var currentSessionId = User.GetSessionId();
+    var sessions = await _context.Sessions.Where(x => x.UserId == userId && x.ExpiredAt > DateTime.UtcNow && x.Id != currentSessionId).ToListAsync();
+    foreach (var session in sessions)
+    {
+      session.ExpiredAt = DateTime.UtcNow;
+    }
+
+    await _userManager.ResetAccessFailedCountAsync(user);
 
     await _context.SaveChangesAsync();
 

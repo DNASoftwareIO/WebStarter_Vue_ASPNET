@@ -15,6 +15,16 @@ public static class ClaimsPrincipalExtensions
     var id = user.FindFirst(ClaimTypes.NameIdentifier) ?? throw new ArgumentNullException();
     return new Guid(id.Value);
   }
+
+  public static Guid? GetSessionId(this ClaimsPrincipal user)
+  {
+    var sessionIdClaim = user.Claims.FirstOrDefault(c => c.Type == "sessionId");
+    if (sessionIdClaim != null && Guid.TryParse(sessionIdClaim.Value, out var sessionId))
+    {
+      return sessionId;
+    }
+    return null;
+  }
 }
 
 public class UserDto
