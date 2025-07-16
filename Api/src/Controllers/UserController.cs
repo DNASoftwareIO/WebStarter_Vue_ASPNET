@@ -355,11 +355,11 @@ public class UserController : ControllerBase
       return StatusCode(StatusCodes.Status400BadRequest, "Error getting key.");
     }
 
-    var key = FormatTfaKey(unformattedKey);
+    var authenticatorUri = GenerateQRCodeUri(user.UserName, unformattedKey.ToUpperInvariant());
 
-    var authenticatorUri = GenerateQRCodeUri(user.UserName, key);
+    var formattedKey = FormatTfaKey(unformattedKey);
 
-    return new JsonResult(new { tfaKey = key, uri = authenticatorUri });
+    return new JsonResult(new { tfaKey = formattedKey, uri = authenticatorUri });
   }
 
   [HttpPost]
@@ -415,7 +415,6 @@ public class UserController : ControllerBase
     var user = await _userManager.FindByEmailAsync(cmd.Email); 
     if (user == null)
     {
-      // TODO do we need to do anything extra here to protect against enumeration attacks on this endpoint?
       return StatusCode(StatusCodes.Status400BadRequest, "Error resetting password. Please try again later.");
     }
 
