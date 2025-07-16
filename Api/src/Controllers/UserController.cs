@@ -109,9 +109,16 @@ public class UserController : ControllerBase
       return StatusCode(StatusCodes.Status400BadRequest, "Error logging in. Please try again later.");
     }
 
+		if (await _userManager.IsLockedOutAsync(user))
+    {
+        return StatusCode(StatusCodes.Status400BadRequest, "Error logging in. Please try again later.");
+    }
+
     var result = await _userManager.CheckPasswordAsync(user, cmd.Password);
     if (!result)
     {
+
+			await _userManager.AccessFailedAsync(user);
       // Don't return username/email already used messages to prevent account enumeration attacks
       return StatusCode(StatusCodes.Status400BadRequest, "Error logging in. Please try again later.");
     }
@@ -141,6 +148,8 @@ public class UserController : ControllerBase
         return StatusCode(StatusCodes.Status400BadRequest, "Invalid tfa code");
       }
     }
+
+		await _userManager.ResetAccessFailedCountAsync(user);
 
     var session = await CreateSession(user.Id);
 
