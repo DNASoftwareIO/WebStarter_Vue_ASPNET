@@ -212,15 +212,15 @@ public class UserController : ControllerBase
   [Route("[controller]/logout")]
   public async Task<IActionResult> Logout([FromBody] EndSessionCommand cmd)
   {
-    var session = await _context.Sessions.FirstOrDefaultAsync(x => x.Id == cmd.Id && x.ExpiredAt > DateTime.UtcNow);
-    if (session == null)
+    var userId = User.GetId();
+
+    var session = await _context.Sessions.FirstOrDefaultAsync(x => x.Id == cmd.Id && x.UserId == userId && x.ExpiredAt > DateTime.UtcNow);
+    if (session != null)
     {
-      return StatusCode(StatusCodes.Status400BadRequest, "Session not found.");
+      session.ExpiredAt = DateTime.UtcNow;
+
+      await _context.SaveChangesAsync();
     }
-
-    session.ExpiredAt = DateTime.UtcNow;
-
-    await _context.SaveChangesAsync();
 
     return Ok();
   }
@@ -232,17 +232,16 @@ public class UserController : ControllerBase
   {
     var userId = User.GetId();
     var sessions = await _context.Sessions.Where(x => x.UserId == userId && x.ExpiredAt > DateTime.UtcNow).ToListAsync();
-    if (sessions.Count == 0)
-    {
-      return StatusCode(StatusCodes.Status400BadRequest, "Sessions not found.");
-    }
 
-    for (var i = 0; i < sessions.Count; i++)
+    if (sessions.Count > 0)
     {
-      sessions[i].ExpiredAt = DateTime.UtcNow;
-    }
+      foreach (var session in sessions)
+      {
+        session.ExpiredAt = DateTime.UtcNow;
+      }
 
-    await _context.SaveChangesAsync();
+      await _context.SaveChangesAsync();
+    }
 
     return Ok();
   }
@@ -457,7 +456,12 @@ public class UserController : ControllerBase
     var user = await _userManager.FindByIdAsync(cmd.UserId);
     if (user == null)
     {
-      return StatusCode(StatusCodes.Status400BadRequest, "User not found.");
+      return StatusCode(StatusCodes.Status400BadRequest, "Error confirming email. Please try again later.");
+    }
+
+    if (user.EmailConfirmed)
+    {
+      return Ok();
     }
 
     cmd.Token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(cmd.Token));
@@ -465,7 +469,7 @@ public class UserController : ControllerBase
     var result = await _userManager.ConfirmEmailAsync(user, cmd.Token);
     if (!result.Succeeded)
     {
-      return StatusCode(StatusCodes.Status400BadRequest, "Token invalid.");
+      return StatusCode(StatusCodes.Status400BadRequest, "Error confirming email. Please try again later.");
     }
 
     await _context.SaveChangesAsync();
@@ -482,7 +486,7 @@ public class UserController : ControllerBase
     var user = await _userManager.FindByIdAsync(userId.ToString());
     if (user == null)
     {
-      return StatusCode(StatusCodes.Status400BadRequest, "User not found."); // TODO needed? Should never hit
+      return StatusCode(StatusCodes.Status400BadRequest, "Error setting email. Please try again later."); // TODO needed? Should never hit
     }
 
     var existingUser = await _userManager.FindByEmailAsync(cmd.Email.Trim());
