@@ -2,7 +2,7 @@
 
 This is a simple starter template that can be used on new projects to avoid writing common auth related code.
 
-The template consists of a Vue js front end application and an ASP.NET Core 8 backend API.
+The template consists of a Vue js front end application and an ASP.NET Core 9 backend API.
 The project uses JWT Authentication with refresh tokens.
 
 The template provides UI and API routes for the following:
