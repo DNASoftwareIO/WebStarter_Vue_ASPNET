@@ -73,21 +73,7 @@ public class UserController : ControllerBase
   [Route("[controller]/register")]
   public async Task<IActionResult> Register([FromBody] RegisterUserCommand cmd)
   {
-    var user = await _userManager.FindByNameAsync(cmd.UserName.Trim());
-    if (user != null)
-    {
-      // Don't return username/email already used messages to prevent account enumeration attacks
-      return StatusCode(StatusCodes.Status400BadRequest, "Error registering account. Please try again later.");
-    }
-
-    user = await _userManager.FindByEmailAsync(cmd.Email.Trim());
-    if (user != null)
-    {
-      // Don't return username/email already used messages to prevent account enumeration attacks
-      return StatusCode(StatusCodes.Status400BadRequest, "Error registering account. Please try again later.");
-    }
-
-    user = new User
+    var user = new User
     {
       UserName = cmd.UserName.Trim(),
       Email = cmd.Email?.Trim().ToLower(),
